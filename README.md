@@ -45,6 +45,11 @@ cp create-workflow-skill/SKILL.md /your-project/.claude/skills/create-workflow-s
 cp -r create-workflow-skill/templates /your-project/.claude/skills/create-workflow-skill/templates
 ```
 
+> **提示**：英文版请将 `SKILL.en.md` 复制为 `SKILL.md`：
+> ```bash
+> cp SKILL.en.md .claude/skills/create-workflow-skill/SKILL.md
+> ```
+
 ### 2. 运行技能
 
 在 Claude Code 中输入：
@@ -81,10 +86,20 @@ your-project/
 ├── ROLES.md                            # 角色注册表与权限矩阵
 ├── .claude/
 │   ├── rules/
-│   │   ├── guardrails/
-│   │   │   ├── boundaries.md           # 执行边界
-│   │   │   ├── git-workflow.md         # Git 工作流规范
-│   │   │   └── redlines.md             # 红线规则
+│   │   └── guardrails/
+│   │       ├── boundaries.md           # 执行边界
+│   │       ├── git-workflow.md         # Git 工作流规范
+│   │       └── redlines.md             # 红线规则
+│   ├── skills/
+│   │   ├── task-init/SKILL.md          # 任务初始化
+│   │   ├── context-handoff/SKILL.md    # 上下文压缩与交接
+│   │   ├── knowledge-sync/SKILL.md     # 知识库管理
+│   │   ├── acceptance-check/SKILL.md   # 验收检查
+│   │   ├── security-gate/SKILL.md      # 安全护栏
+│   │   └── generate-help/SKILL.md      # 帮助文档生成器
+│   └── settings.json                   # Claude Code 配置
+├── docs/
+│   ├── rules/
 │   │   ├── roles/
 │   │   │   ├── pm.md                   # 产品经理上下文
 │   │   │   ├── frontend.md             # 前端开发上下文
@@ -96,14 +111,7 @@ your-project/
 │   │       ├── feature-dev.md          # 功能开发流程
 │   │       ├── hotfix.md               # 热修复流程
 │   │       └── release.md              # 发版流程
-│   ├── skills/
-│   │   ├── task-init/SKILL.md          # 任务初始化
-│   │   ├── context-handoff/SKILL.md    # 上下文压缩与交接
-│   │   ├── knowledge-sync/SKILL.md     # 知识库管理
-│   │   ├── acceptance-check/SKILL.md   # 验收检查
-│   │   ├── security-gate/SKILL.md      # 安全护栏
-│   │   └── generate-help/SKILL.md      # 帮助文档生成器
-│   └── settings.json                   # Claude Code 配置
+│   └── help.html                       # 帮助文档（由 /generate-help 生成）
 ├── knowledge-base/
 │   ├── INDEX.md                        # 知识库索引
 │   ├── contexts/
@@ -111,8 +119,6 @@ your-project/
 │   │   └── archived/                   # 已归档的上下文
 │   ├── prompts/                        # 提示词模板（按角色分类）
 │   └── decisions/                      # 架构决策记录
-└── docs/
-    └── help.html                       # 帮助文档（由 /generate-help 生成）
 ```
 
 ---
@@ -246,7 +252,7 @@ knowledge-base/
 
 ### 添加自定义角色
 
-1. 按照角色模板创建 `.claude/rules/roles/{role-id}.md`
+1. 按照角色模板创建 `docs/rules/roles/{role-id}.md`
 2. 在 `ROLES.md` 中添加该角色（角色矩阵、权限矩阵、技能映射）
 3. 更新 `CLAUDE.md` 中的角色路由部分
 
