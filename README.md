@@ -40,7 +40,7 @@ cp -r templates .claude/skills/create-workflow-skill/templates
 或者直接克隆此仓库：
 
 ```bash
-git clone https://github.com/your-username/create-workflow-skill.git
+git clone https://github.com/gz-xininn/create-workflow-skill.git
 cp create-workflow-skill/SKILL.md /your-project/.claude/skills/create-workflow-skill/SKILL.md
 cp -r create-workflow-skill/templates /your-project/.claude/skills/create-workflow-skill/templates
 ```
