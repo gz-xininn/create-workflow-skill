@@ -1,6 +1,6 @@
 # Step 8b: Quality Skill File Templates
 
-Generate 3 skill files. Each skill requires a SKILL.md in its corresponding directory.
+Generate 4 skill files. Each skill requires a SKILL.md in its corresponding directory.
 
 ---
 
@@ -257,3 +257,171 @@ help.html must contain the following 13 sections:
 1. Save to `docs/help.html`
 2. Verify HTML format is correct
 3. Report generation results
+
+---
+
+## Skill 7: /export-prompt-log
+
+Target file: `.claude/skills/export-prompt-log/SKILL.md`
+
+frontmatter:
+
+    ---
+    name: export-prompt-log
+    description: "Export prompt logs by month. Triggers: user says 'export prompt log', 'export log', or when monthly prompt reasoning records need to be summarized. Applicable roles: All roles."
+    ---
+
+Content:
+
+# /export-prompt-log — Monthly Prompt Log Export
+
+You are the prompt log export tool. Your responsibility is to filter all prompt logs for a user-specified month from the `knowledge-base/prompt-logs/` directory and export them as a structured Markdown file.
+
+## Execution Steps
+
+### Step 1: Get Export Month
+
+If the user provided a month parameter when triggering (e.g. `/export-prompt-log 2026-06`), use it directly.
+
+If not provided, ask the user:
+
+```
+Please enter the month to export (format: YYYY-MM), e.g.: 2026-06
+```
+
+### Step 2: Scan Prompt Logs
+
+1. Read all `.md` files under `knowledge-base/prompt-logs/` directory
+2. Filter records for the specified month by the date field (second segment, YYYYMMDD) in the filename
+   - Filename format: `{name}-{date}-{iteration}-{role}-{seq}.md`
+   - Extract the `{date}` field (YYYYMMDD), match the year-month portion (YYYYMM)
+   - Example: User specifies `2026-06`, match all files where date starts with `202606`
+3. If no records exist for that month, inform the user and end:
+   ```
+   No prompt logs found for the specified month ({YYYY-MM}).
+   ```
+
+### Step 3: Read and Summarize
+
+For each filtered file:
+1. Read file content
+2. Extract metadata from frontmatter (developer, date, iteration, role, record-count)
+3. Extract all reasoning records (user original + semantic understanding + completion report)
+
+Sort by the following dimensions:
+- Primary sort: date (ascending)
+- Secondary sort: developer (alphabetical)
+- Tertiary sort: sequence number (ascending)
+
+### Step 4: Generate Export File
+
+Export filename: `prompt-log-{YYYY-MM}.md`
+Save path: `knowledge-base/exports/prompt-log-{YYYY-MM}.md`
+
+Export format:
+
+```markdown
+---
+export-month: {YYYY-MM}
+export-date: {full datetime of export}
+total-files: {total file count}
+total-records: {total reasoning record count}
+developers: [{deduplicated developer list}]
+---
+
+# Prompt Log Monthly Report
+
+## Export Info
+
+| Field | Value |
+|-------|-------|
+| Export Month | {YYYY-MM} |
+| Export Date | {full datetime of export} |
+| Log File Count | {total file count} |
+| Total Records | {total reasoning record count} |
+| Developers | {deduplicated developer list} |
+
+---
+
+## Summary by Date
+
+### {YYYY-MM-DD} — {developer} — {iteration} — {role}
+
+> Source file: `{original filename}`
+
+#### Record 1
+
+**User Natural Language Original:**
+
+> {user original input}
+
+**Semantic Understanding Confirmation:**
+
+{semantic understanding confirmation content}
+
+**Completion Report:**
+
+{execution result summary}
+
+---
+
+#### Record 2
+
+**User Natural Language Original:**
+
+> {user original input}
+
+**Semantic Understanding Confirmation:**
+
+{semantic understanding confirmation content}
+
+**Completion Report:**
+
+{execution result summary}
+
+---
+
+(More records from the same file...)
+
+---
+
+### {next date} — {developer} — {iteration} — {role}
+
+> Source file: `{original filename}`
+
+(Records from this file...)
+
+---
+
+## Statistics Summary
+
+| Developer | Log Files | Records | Iterations |
+|-----------|----------|---------|------------|
+| {name1} | {n} | {m} | {iterations} |
+| {name2} | {n} | {m} | {iterations} |
+| **Total** | **{total_files}** | **{total_records}** | |
+```
+
+### Step 5: Output Confirmation
+
+Display to the user:
+1. Export file save path
+2. Statistics summary (file count, record count, developer list)
+3. Inform the user that the export file can be found in the `knowledge-base/exports/` directory
+
+Output format:
+```
+✅ Prompt log export complete
+
+📁 File path: knowledge-base/exports/prompt-log-{YYYY-MM}.md
+📊 Statistics: {N} log files, {M} reasoning records
+👥 Developers: {name1}, {name2}, ...
+📅 Date range: {earliest date} ~ {latest date}
+```
+
+## Notes
+
+1. If an export file already exists for the target month, inform the user first and confirm whether to overwrite
+2. The export file only summarizes existing records; it does not modify original prompt-logs files
+3. Ensure the `knowledge-base/exports/` directory exists; create it if it doesn't
+4. If a malformed log file is encountered during export, skip it and note it at the end of the export file

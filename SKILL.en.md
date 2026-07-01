@@ -38,6 +38,7 @@ Ask the user for the following information (use defaults if not provided):
    - /acceptance-check — Acceptance check
    - /security-gate — Security red-line guard
    - /generate-help — Help documentation generation
+   - /export-prompt-log — Monthly prompt log export
 6. **Custom Roles** (optional) — Format: ID-Name-Duties
 7. **Custom Skills** (optional) — Format: Name-Trigger-Purpose
 
@@ -65,6 +66,8 @@ Generate the following structure under the user-specified project root (only gen
     │   ├── INDEX.md
     │   ├── contexts/{active,archived}/
     │   ├── prompts/{each selected role}/
+    │   ├── prompt-logs/
+    │   ├── exports/
     │   └── decisions/
     └── docs/
 

@@ -142,11 +142,12 @@ This is the core mechanism for saving tokens.
 | Skill | Trigger | Purpose |
 |-------|---------|---------|
 | /task-init | new task, start, begin | Generate task prompt template |
-| /context-handoff | save context, handoff, wrap up | Compress and save context |
+| /context-handoff | save context, handoff, wrap up | Compress and save context + auto-generate prompt logs |
 | /knowledge-sync | sync knowledge base, add template | Knowledge base CRUD |
 | /acceptance-check | acceptance, check completion | Acceptance criteria check |
 | /security-gate | security check | Security red-line review |
 | /generate-help | generate help docs | Generate help.html |
+| /export-prompt-log | export prompt log, export log | Monthly prompt log export |
 
 ---
 

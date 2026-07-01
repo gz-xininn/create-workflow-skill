@@ -142,11 +142,12 @@
 | 技能 | 触发词 | 用途 |
 |------|--------|------|
 | /task-init | 新任务、开始、start | 生成任务提示词模板 |
-| /context-handoff | 保存上下文、交接、wrap up | 压缩并保存上下文 |
+| /context-handoff | 保存上下文、交接、wrap up | 压缩并保存上下文 + 自动生成提示词记录 |
 | /knowledge-sync | 同步知识库、添加模板 | 知识库增删改查 |
 | /acceptance-check | 验收、检查完成 | 验收标准检查 |
 | /security-gate | 安全检查 | 安全红线审查 |
 | /generate-help | 生成帮助文档 | 生成 help.html |
+| /export-prompt-log | 导出提示词、导出记录 | 按月导出提示词推理记录 |
 
 ---
 

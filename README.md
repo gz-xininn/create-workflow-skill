@@ -17,7 +17,7 @@
 - **任务工作流** — 语义理解 → 任务初始化 → 执行阶段 → 上下文交接
 - **安全护栏** — 数据库、Git、数据、执行红线规则，不可绕过
 - **知识库** — 上下文压缩与交接，跨会话节省 70-80% token
-- **内置技能** — 6 个开箱即用的技能：task-init、context-handoff、knowledge-sync、acceptance-check、security-gate、generate-help
+- **内置技能** — 7 个开箱即用的技能：task-init、context-handoff、knowledge-sync、acceptance-check、security-gate、generate-help、export-prompt-log
 - **完全可定制** — 支持添加自定义角色、技能和提示词模板
 
 ---
@@ -72,7 +72,7 @@ init workflow
 
 1. **项目信息** — 输入项目名称和根目录
 2. **选择角色** — 选择需要的角色（默认：全部 6 个）
-3. **选择技能** — 选择需要包含的技能（默认：全部 6 个）
+3. **选择技能** — 选择需要包含的技能（默认：全部 7 个）
 4. **生成文件** — 所有文件自动创建
 5. **自定义配置** — 在 CLAUDE.md 中填写项目特定信息
 
@@ -96,7 +96,8 @@ your-project/
 │   │   ├── knowledge-sync/SKILL.md     # 知识库管理
 │   │   ├── acceptance-check/SKILL.md   # 验收检查
 │   │   ├── security-gate/SKILL.md      # 安全护栏
-│   │   └── generate-help/SKILL.md      # 帮助文档生成器
+│   │   ├── generate-help/SKILL.md      # 帮助文档生成器
+│   │   └── export-prompt-log/SKILL.md  # 按月导出提示词记录
 │   └── settings.json                   # Claude Code 配置
 ├── docs/
 │   ├── rules/
@@ -118,6 +119,8 @@ your-project/
 │   │   ├── active/                     # 进行中的任务上下文
 │   │   └── archived/                   # 已归档的上下文
 │   ├── prompts/                        # 提示词模板（按角色分类）
+│   ├── prompt-logs/                    # 提示词推理记录（由 /context-handoff 自动生成）
+│   ├── exports/                        # 导出文件（由 /export-prompt-log 生成）
 │   └── decisions/                      # 架构决策记录
 ```
 
@@ -154,11 +157,12 @@ your-project/
 | 技能 | 触发词 | 说明 |
 |------|--------|------|
 | `/task-init` | new task、start、begin | 语义理解 + 结构化任务确认单生成 |
-| `/context-handoff` | save context、wrap up、done | 压缩并保存上下文，用于跨会话交接 |
+| `/context-handoff` | save context、wrap up、done | 压缩并保存上下文 + 自动生成提示词记录，用于跨会话交接 |
 | `/knowledge-sync` | sync、add template | 知识库增删改查与索引管理 |
 | `/acceptance-check` | verify、acceptance | 根据验收标准检查任务完成情况 |
 | `/security-gate` | security check | 敏感操作前的红线安全审查 |
 | `/generate-help` | generate help | 根据当前配置生成 docs/help.html |
+| `/export-prompt-log` | 导出提示词、export log | 按月导出提示词推理记录到 exports/ |
 
 ---
 
@@ -243,6 +247,8 @@ knowledge-base/
 │   ├── qa/                     # 测试岗模板（测试计划、缺陷报告）
 │   ├── devops/                 # 运维岗模板（部署检查清单）
 │   └── acceptance/             # 验收岗模板
+├── prompt-logs/                # 提示词推理记录（由 /context-handoff 自动生成）
+├── exports/                    # 导出文件（由 /export-prompt-log 生成）
 └── decisions/                  # 架构决策记录（ADR）
 ```
 

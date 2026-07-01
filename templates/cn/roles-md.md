@@ -44,6 +44,7 @@
 | /acceptance-check | Y | - | - | Y | - | Y |
 | /security-gate | - | - | Y | - | Y | - |
 | /generate-help | Y | - | - | - | Y | - |
+| /export-prompt-log | Y | Y | Y | Y | Y | Y |
 
 ---
 

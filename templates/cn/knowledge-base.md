@@ -18,6 +18,8 @@
     │   ├── qa/
     │   ├── devops/
     │   └── acceptance/
+    ├── prompt-logs/
+    ├── exports/
     └── decisions/
 
 注意：prompts/ 下仅创建用户选择的角色对应的子目录。
@@ -42,6 +44,14 @@ _暂无归档任务_
 ## 提示词模板 / Prompt Templates
 
 > 使用 /knowledge-sync 添加你的项目提示词模板
+
+## 提示词记录 / Prompt Logs
+
+_由 /context-handoff 自动生成，记录每次会话的提示词推理过程_
+
+## 导出记录 / Exported Logs
+
+_导出文件由 /export-prompt-log 生成，存放于 exports/ 目录_
 
 ## 架构决策 / Architecture Decisions
 

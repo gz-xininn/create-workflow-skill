@@ -167,14 +167,14 @@ frontmatter:
 
     ---
     name: context-handoff
-    description: "Compress the current task context and save it to the knowledge base for cross-role/cross-session handoff. Triggers: user says 'save context', 'handoff', 'wrap up', 'done', 'end task', or when a task is completed, or when switching roles to continue the same task. Core value: Replace a 3000-5000 token conversation replay with a 200-400 token compressed summary, saving 70-80% of tokens."
+    description: "Compress the current task context and save it to the knowledge base, and auto-generate prompt logs to prompt-logs/. Triggers: user says 'save context', 'handoff', 'wrap up', 'done', 'end task', or when a task is completed, or when switching roles to continue the same task. Core value: Replace a 3000-5000 token conversation replay with a 200-400 token compressed summary, saving 70-80% of tokens."
     ---
 
 Content:
 
 # /context-handoff — Context Compression & Handoff
 
-You are the context manager. Your responsibility is to compress the current session's work output into a structured summary so the next person (or next session) can quickly restore context with minimal tokens.
+You are the context manager. Your responsibility is to compress the current session's work output into a structured summary so the next person (or next session) can quickly restore context with minimal tokens. Additionally, auto-generate prompt logs to archive all prompt reasoning processes from this session.
 
 ## Execution Steps
 
@@ -229,10 +229,119 @@ related: [{list of related context IDs}]
 2. If task is completed, move to `knowledge-base/contexts/archived/`
 3. Update the entry in `knowledge-base/INDEX.md`
 
-### Step 4: Output Confirmation
+### Step 4: Generate Prompt Log (Auto-executed, cannot be skipped)
 
-Display the saved summary to the user and inform:
-- File save path
+While saving context, automatically generate a prompt log file to archive all prompt reasoning processes from this session.
+
+#### 4.1 Collect Metadata
+
+Auto-collect via the following methods:
+- **Developer**: Execute `git config user.name` (convert to lowercase for filename)
+- **Date**: Current date, format YYYYMMDD
+- **Iteration**: Extract iteration info from the current task's task-init confirmation sheet
+- **Role**: The role confirmed in the current session (PM/FE/BE/QA/OPS/ACC mapped to Chinese: 产品/前端/后端/测试/运维/验收)
+
+#### 4.2 File Naming
+
+Format: `{name}-{date}-{iteration}-{role}-{seq}.md`
+
+- `{name}`: git user.name in lowercase, e.g. `zhaoyg`
+- `{date}`: YYYYMMDD, e.g. `20260629`
+- `{iteration}`: iteration identifier, e.g. `BI1.0.7`
+- `{role}`: role name in Chinese, e.g. `前端`
+- `{seq}`: two-digit sequence number, starting from `01`
+
+Sequence rule: Scan `knowledge-base/prompt-logs/` directory for files with the same prefix (name-date-iteration-role), take the max sequence number +1. If no files with the same prefix exist, start from `01`.
+
+Example: `zhaoyg-20260629-BI1.0.7-前端-01.md`
+
+#### 4.3 Retroactively Extract All Prompt Reasoning from Session
+
+Review the entire session history and extract each independent prompt reasoning process. One reasoning = one complete "user raises requirement → semantic understanding → execution complete" cycle.
+
+For each reasoning, extract:
+1. **User natural language original**: The user's original text describing the requirement
+2. **Semantic understanding confirmation**: The corresponding semantic understanding confirmation template (including iteration, task list, confidence, etc.)
+3. **Completion report**: Execution result summary of that reasoning (what was done, what files were changed, key decisions)
+
+#### 4.4 Write Prompt Log File
+
+Save to `knowledge-base/prompt-logs/{filename}.md`, format as follows:
+
+```markdown
+---
+developer: {git user.name original value}
+date: {YYYY-MM-DD}
+iteration: {iteration identifier}
+role: {role name in Chinese}
+session-context: {corresponding context filename, e.g. 20260629-bi-filter-adjustment}
+record-count: {number of reasoning records in this file}
+created: {creation time}
+---
+
+# Prompt Log
+
+## Session Info
+
+| Field | Value |
+|-------|-------|
+| Developer | {developer} |
+| Date | {date} |
+| Iteration | {iteration} |
+| Role | {role} |
+| Related Context | {session-context} |
+
+---
+
+## Reasoning Record List
+
+### Record 1
+
+**User Natural Language Original:**
+
+> {user's complete original input text}
+
+**Semantic Understanding Confirmation:**
+
+{complete content of the semantic understanding confirmation template, preserving original format}
+
+**Completion Report:**
+
+{execution result of this reasoning: what was completed, which files were modified, key decisions}
+
+---
+
+### Record 2
+
+**User Natural Language Original:**
+
+> {user's complete original input text}
+
+**Semantic Understanding Confirmation:**
+
+{complete content of the semantic understanding confirmation template}
+
+**Completion Report:**
+
+{execution result of this reasoning}
+
+---
+
+(More records appended in this format...)
+```
+
+#### 4.5 Update INDEX.md
+
+Add an entry under the "Prompt Logs" section in `knowledge-base/INDEX.md`:
+```
+- [{filename}](prompt-logs/{filename}.md) — {iteration} {role} {date} prompt log ({N} records)
+```
+
+### Step 5: Output Confirmation
+
+Display the saved summary and prompt log to the user, and inform:
+- Context file save path
+- Prompt log file save path and record count
 - How to restore in the next session (which context file to load)
 - Estimated token savings
 
